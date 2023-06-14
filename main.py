@@ -1,17 +1,19 @@
 import numpy as np
 from scipy import constants
-import domain_contours
+import domain
 from resonance_hunter import WaveEquationResonsanceHunter
 
-x, y = domain_contours.circle()
+x, y = domain.circle()
 
-v = lambda T: np.sqrt(1.4 * constants.Boltzmann * (T + 273.15) / (28.96 * constants.u))
-temp = 22.4
+v = lambda T: np.sqrt(1.4 * constants.Boltzmann * (T + constants.zero_Celsius) / (28.96 * constants.u))
+temperature = 22.4
 
 WaveEquationResonsanceHunter(
-    x, y, v(temp), 30
+    x, y, 
+    v(temperature), 
+    N=30, spline_degree=3
     ).play(
             bc="dirichlet",
-            eigmode=7,
+            eigmode=1,
             draw_format="3D"
             )

@@ -5,7 +5,7 @@ from scipy import interpolate
 
 class WaveEquationResonsanceHunter():
     
-    def __init__(self, input_X, input_Y, phase_velocity=343, N=30, fontsize=16):
+    def __init__(self, input_X, input_Y, phase_velocity=343, N=30, spline_degree=3, fontsize=16):
 
         def error_msg(): 
             print("Sorry, your input coordinates are not valid.\nPlease input two arrays for a contour or two numbers for a rectangle.")
@@ -13,6 +13,7 @@ class WaveEquationResonsanceHunter():
 
         self.input_X = input_X
         self.input_Y = input_Y
+        self.spline_degree = spline_degree
         self.v = phase_velocity
         self.N = N
         self.fontsize = fontsize
@@ -36,11 +37,11 @@ class WaveEquationResonsanceHunter():
         def shift(u, ref): return 0.5 * (length(ref) - length(u)) - np.min(u)
         
         X, Y = np.array(self.input_X), np.array(self.input_Y) 
-     
-        tck, u = interpolate.splprep([X, Y], s=0, per=True)
+
+        tck, u = interpolate.splprep([X, Y], s=0, k=self.spline_degree, per=True)
         xx, yy = interpolate.splev(np.linspace(0, 1, 5 * self.N), tck)
 
-        if length(xx) >= length(yy) :
+        if length(xx) >= length(yy):
             scale = 1/(np.max(xx) - np.min(xx))
             x_shift = np.abs(np.min(xx))
             y_shift = shift(yy, xx)
@@ -212,7 +213,7 @@ class WaveEquationResonsanceHunter():
         else:
             grid = self.make_rect_grid()
 
-        # self.draw_cmap(grid)
+        self.draw_cmap(grid)
 
         if bc == "neumann":
             [eigval, eigvect] = self.solve_wave_eqn_neumann(grid, grid_length, grid_length)
@@ -220,8 +221,11 @@ class WaveEquationResonsanceHunter():
             [eigval, eigvect] = self.solve_wave_eqn_dirichlet(grid, grid_length, grid_length)
         
         freq = v * np.sqrt(np.abs(eigval[eigmode])) / (2 * np.pi)
-        # print("λ" + str(eigmode) + " =", round(eigval[eigmode],2))
-        print("f" + str(eigmode) + " =", round(freq, 2))
+        border = 100 * "#"
+        print(border)
+        print("The eigenvalue is:\nλ" + str(eigmode) + " =", round(eigval[eigmode],2))
+        print(border)
+        print("The frequency is:\nf" + str(eigmode) + " =", round(freq, 2))
 
         wave = eigvect[:, eigmode].reshape(grid.shape)
 
