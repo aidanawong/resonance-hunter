@@ -19,12 +19,14 @@ class WaveEquationResonsanceHunter():
     def __init__(self, input_X, input_Y, phase_velocity=343, N=30, spline_degree=3, fontsize=16):
         """
         Initializing constants and settings.
-        input_X: np.ndarray - x coordinates of boundary for the domain
-        input_Y: np.ndarray - Y coordinates of boundary for the domain
-        phase_velocity: float or int - speed of the waves. Only used for finding the frequency
-        N: int - resolution of
-        spline_degree: int - Between and including 1 to 5. For smooth domains, 3 is recommended. Choose 1 for linear domains 
+        input_X: np.ndarray - x coordinates of boundary for the domain.
+        input_Y: np.ndarray - Y coordinates of boundary for the domain.
+        phase_velocity: float or int - speed of the waves. Only used for finding the frequency.
+        N: int - Resolution of 2D grid.
+        spline_degree: int - Between and including 1 to 5. For smooth domains, 3 is recommended. Choose 1 for linear domains.
+        fontsize: int - Size of letters for axes.
         """
+
         def error_msg(): 
             print("Sorry, your input coordinates are not valid.\nPlease input two arrays for a contour or two numbers for a rectangle.")
             quit()
@@ -37,9 +39,11 @@ class WaveEquationResonsanceHunter():
         self.fontsize = fontsize
         
         if type(input_X) == np.ndarray and type(input_Y) == np.ndarray:
+            # Simple closed contours
             self.shape_type = "contour"
             self.interp_x, self.interp_y = self.process_boundary()  
         elif type(input_X) == int or type(input_X) == float:
+            # Rectangles
             if type(input_Y) == int or type(input_Y) == float:
                 self.input_X, self.input_Y = np.abs(self.input_X), np.abs(self.input_Y)
                 self.shape_type = "rect"
@@ -51,24 +55,21 @@ class WaveEquationResonsanceHunter():
     
     def process_boundary(self):
 
-        def length(u): return np.abs(np.max(u) - np.min(u)) 
-        def shift(u, ref): return 0.5 * (length(ref) - length(u)) - np.min(u)
+        def shift(u, ref): return 0.5 * (np.ptp(ref) - np.ptp(u)) - np.min(u)
         
-        X, Y = np.array(self.input_X), np.array(self.input_Y) 
-
-        tck, u = splprep([X, Y], s=0, k=self.spline_degree, per=True)
+        tck, u = splprep([self.input_X, self.input_Y], s=0, k=self.spline_degree, per=True)
         xx, yy = splev(np.linspace(0, 1, 5 * self.N), tck)
 
-        if length(xx) >= length(yy):
+        if np.ptp(xx) >= np.ptp(yy):
             scale = 1/(np.max(xx) - np.min(xx))
             x_shift = np.abs(np.min(xx))
             y_shift = shift(yy, xx)
-            self.grid_length = length(X)
+            self.grid_length = np.ptp(self.input_X)
         else:
             scale = 1/(np.max(yy) - np.min(yy))
             x_shift = shift(xx, yy)
             y_shift = np.abs(np.min(yy))
-            self.grid_length = length(Y)
+            self.grid_length = np.ptp(self.input_Y)
 
         xx = scale * (xx + x_shift)
         yy = scale * (yy + y_shift)
