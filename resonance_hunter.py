@@ -19,8 +19,9 @@ class WaveEquationResonsanceHunter():
     def __init__(self, input_X, input_Y, phase_velocity=343, N=30, spline_degree=3, fontsize=16):
         """
         Initializing constants and settings.
-        input_X: np.ndarray - x coordinates of boundary for the domain.
-        input_Y: np.ndarray - Y coordinates of boundary for the domain.
+        
+        input_X: 1D np.ndarray - x coordinates of boundary for the domain.
+        input_Y: 1D np.ndarray - Y coordinates of boundary for the domain.
         phase_velocity: float or int - speed of the waves. Only used for finding the frequency.
         N: int - Resolution of 2D grid.
         spline_degree: int - Between and including 1 to 5. For smooth domains, 3 is recommended. Choose 1 for linear domains.
@@ -54,19 +55,24 @@ class WaveEquationResonsanceHunter():
             error_msg()
     
     def process_boundary(self):
+        """
+        Prepares the boundary to be transformed into a grid by interpolation, 
+        scaling to a unit square, and transforming back to the original size.  
+        """
 
         def shift(u, ref): return 0.5 * (np.ptp(ref) - np.ptp(u)) - np.min(u)
         
         tck, u = splprep([self.input_X, self.input_Y], s=0, k=self.spline_degree, per=True)
         xx, yy = splev(np.linspace(0, 1, 5 * self.N), tck)
 
+        # Determine which is the longer side
         if np.ptp(xx) >= np.ptp(yy):
-            scale = 1/(np.max(xx) - np.min(xx))
+            scale = 1/np.ptp(xx)
             x_shift = np.abs(np.min(xx))
             y_shift = shift(yy, xx)
             self.grid_length = np.ptp(self.input_X)
         else:
-            scale = 1/(np.max(yy) - np.min(yy))
+            scale = 1/np.ptp(yy)
             x_shift = shift(xx, yy)
             y_shift = np.abs(np.min(yy))
             self.grid_length = np.ptp(self.input_Y)
@@ -76,6 +82,11 @@ class WaveEquationResonsanceHunter():
         return (xx, yy)
     
     def make_rect_grid(self):
+        """
+        Creates a grid where points in a domain denoted by a 1.
+        The domain will have the length and width of input_X and input_Y
+        """
+
         xx, yy, L = self.input_X, self.input_Y, self.grid_length
         grid = np.zeros([self.N,self.N])
         X_mg, Y_mg = np.meshgrid(np.linspace(-L,L,self.N),np.linspace(-L,L,self.N))
@@ -83,48 +94,73 @@ class WaveEquationResonsanceHunter():
         return grid
     
     def make_contour_grid(self):
-        def fill_contour(arr):
-            A = np.maximum.accumulate(arr,1)
-            B = np.fliplr(np.maximum.accumulate(np.fliplr(arr),1))
-            C = np.flipud(np.maximum.accumulate(np.flipud(arr), 0))
-            D = np.maximum.accumulate(arr, 0)
-            E = np.logical_and(np.logical_and(A,B),
-                                np.logical_and(C,D)
-                                ).astype(int)
-            return E
+        """
+        Creates a grid where points in a domain denoted by a 1.
+        The domain will be determined by the processed coordinates from a contour.
+        """
         
+        # Makes sure the edges of the grid are 0 so the domain does not spill over
         N_cut = self.N - 2
         grid = np.zeros([N_cut,N_cut])
+
+        # Scales the coordinates to the grid.
         x, y = self.interp_x, self.interp_y
         x = np.ceil(x * N_cut - 1) 
         y = np.ceil(y * N_cut - 1) 
         
+        # Draws the boundary on the grid
         coords = np.c_[y,x]
-        
         for coord in coords:
             xi, yi = int(coord[0]), int(coord[1])
             grid[xi, yi] = 1
         
-        grid = np.pad(fill_contour(grid), pad_width=1, mode='constant', constant_values=0)
+        # After the grid's boundary is plotted with 1's, the inside is filled with 1's.
+        # This completes the domain.
+        A = np.maximum.accumulate(grid,1)
+        B = np.fliplr(np.maximum.accumulate(np.fliplr(grid),1))
+        C = np.flipud(np.maximum.accumulate(np.flipud(grid), 0))
+        D = np.maximum.accumulate(grid, 0)
+        E = np.logical_and(np.logical_and(A,B),
+                            np.logical_and(C,D)
+                            ).astype(int)
+        
+        # Adds the edges of the grid again
+        grid = np.pad(E, pad_width=1, mode='constant', constant_values=0)
         return grid
 
     def find_choose_eig(self, M):
+        """
+        Finds the eigenvalues and eigenvectors, discarding ones that equal zero.
 
+        M: 2D np.ndarray matrix - The grid consisting of the finite differences.
+        """
+
+        # Find eigenvalues and eigenvectors
         eigval, eigvect = np.linalg.eig(M)
         eigval = np.real(eigval)
         eigvect = np.real(eigvect)
 
+        # Discard eigenvalues that equal zero
         not_zero = (eigval!=0)
         eigval = eigval[not_zero]
         eigvect = eigvect[: , not_zero]
 
+        # Sort by increasing eigenvalues
         idx = np.argsort(np.abs(eigval))
         eigval = eigval[idx]
         eigvect = eigvect[:, idx]
 
         return [eigval, eigvect, M]
 
-    def solve_wave_eqn_dirichlet(self, domain, Lx=1, Ly=1):
+    def solve_wave_eqn_dirichlet(self, domain, Lx, Ly):
+        """
+        Solves the wave equation with the finite difference method given Dirichlet conditions
+
+        domain: 2D np.ndarray - The grid composed of 1's and 0's. The equation is solved wherever there are 1's.
+        Lx: float or int - Physical length of the grid's X axis. Equivalent to self.grid_length
+        Ly: float or int - Physical length of the grid's Y axis. Equivalent to self.grid_length
+        """
+
         Nx, Ny = domain.shape
         M = np.zeros([Nx * Ny, Nx * Ny])
 
@@ -149,7 +185,15 @@ class WaveEquationResonsanceHunter():
         
         return [eigval, eigvect]
     
-    def solve_wave_eqn_neumann(self, domain, Lx=1, Ly=1):
+    def solve_wave_eqn_neumann(self, domain, Lx, Ly):
+        """
+        Solves the wave equation with the finite difference method given Neumann conditions
+
+        domain: 2D np.ndarray - The grid composed of 1's and 0's. The equation is solved wherever there are 1's.
+        Lx: float or int - Physical length of the grid's X axis. Equivalent to self.grid_length
+        Ly: float or int - Physical length of the grid's Y axis. Equivalent to self.grid_length
+        """
+
         Nx, Ny = domain.shape
         M = np.zeros([Nx * Ny, Nx * Ny])
 
@@ -187,6 +231,12 @@ class WaveEquationResonsanceHunter():
         return [eigval, eigvect] 
     
     def draw_3D(self, sln):
+        """
+        Draws the solution on a 3D plot.
+
+        sln: 2D np.ndarray - The wave's values
+        """
+
         L = self.grid_length
         x = np.linspace(0, L, sln.shape[1])
         y = np.linspace(0, L, sln.shape[0])
@@ -207,6 +257,12 @@ class WaveEquationResonsanceHunter():
         plt.close()
     
     def draw_cmap(self, sln):
+        """
+        Draws the solution on a heatmap.
+
+        sln: 2D np.ndarray - The wave's values
+        """
+
         L = self.grid_length
         x = np.linspace(0, L, sln.shape[1])
         y = np.linspace(0, L, sln.shape[0])
@@ -224,7 +280,14 @@ class WaveEquationResonsanceHunter():
         plt.close()
 
     def play(self, bc="dirichlet", eigmode=0, draw_format="3D"):
-        
+        """
+        Runs the entire class to solve and present the wave.
+
+        bc: str - Boundary conditions, dirichlet or neumann
+        eigmode: int - Eigenmode. The higher the eigenmode the greater the frequency.
+        draw_format: str - "3D" or "heatmap", describes the figure format
+        """
+
         grid_length, v = self.grid_length, self.v
 
         if self.shape_type == "contour":
@@ -232,6 +295,7 @@ class WaveEquationResonsanceHunter():
         else:
             grid = self.make_rect_grid()
 
+        # Draw the domain
         self.draw_cmap(grid)
 
         if bc == "neumann":
@@ -239,6 +303,7 @@ class WaveEquationResonsanceHunter():
         else:
             [eigval, eigvect] = self.solve_wave_eqn_dirichlet(grid, grid_length, grid_length)
         
+        # Find the frequency and eigenvalues given an eigmode
         freq = v * np.sqrt(np.abs(eigval[eigmode])) / (2 * np.pi)
         border = 100 * "#"
         print(border)

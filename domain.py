@@ -13,6 +13,11 @@ Two numbers are interpreted as length and width for a rectangular domain.
 import numpy as np
 
 def santiana():
+    """
+    Coordinates describing a classical Santos Hernandez guitar
+    Source: https://laguitarra-blog.com/wp-content/uploads/2011/12/santoshernandez.pdf
+    """
+
     X = np.array([
         0,0.271,1.097,2.931,5.732,9.465,13.614,\
         19.032,24.318,29.191,33.593,39.147,43.463,\
@@ -30,6 +35,7 @@ def santiana():
         33.951,32.353,30.223,27.424,24.834,21.092,\
         16.569,10.364,0
         ])
+    
     # Because the guitar is symmetric, we can double the x values and double and flip the y values.
     # This creates a plot that draws out a guitar from (0,0) and moving counterclockwise
     X = np.concatenate((X, np.flipud(X[:-1])))
@@ -41,6 +47,10 @@ def santiana():
     return X, Y
 
 def spinner():
+    """
+    A two bladed object
+    """
+
     X = np.array([0,1,2,3,4,5])
     Y = np.array([0,1,0.8,1,4,0])
     X = np.concatenate((X, np.flipud(X[:-1])))
@@ -48,22 +58,37 @@ def spinner():
     return X, Y
 
 def fork():
+    """
+    A fork with three prongs
+    """
+
     X = np.array([0, 1, 2, 3, 4, 5, 6, 4, 3.5, 3, 2.5, 2, 0])
     Y = np.array([0, 4, 1, 4, 1, 4, 0, -1, -3.8, -4, -3.8, -1, 0])
     return X, Y
 
 def wacky():
+    """
+    Randomly, strangely fox shaped object
+    """
+
     X = np.array([-3, -2.5, -2, -1, 0, 1, 2, 1.5, 1, 0, -2, -3])
     Y = np.array([0, 1, 4, 3, 4, 1, 0.5, -4, -2, -5, -0.3, 0])
     return X, Y
 
 def circle():
+    """
+    A unit circle
+    """
+
     Theta = np.linspace(0, 2 * np.pi, 100)
     X = np.sin(Theta)
     Y = np.cos(Theta)
     return X, Y
 
 def rect():
+    """
+    Rectangular cavity, units in metres
+    """
     return 0.2122, 0.1485
 
 def error_test_1():
