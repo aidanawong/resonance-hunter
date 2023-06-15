@@ -15,7 +15,8 @@ import numpy as np
 def santiana():
     """
     Coordinates describing a classical Santos Hernandez guitar
-    Source: https://laguitarra-blog.com/wp-content/uploads/2011/12/santoshernandez.pdf
+    Source: N. Bellido, Guitare Classique 'dans le style' SANTOS HERNANDEZ, 
+    url:https://laguitarra-blog.com/wp-content/uploads/2011/12/santoshernandez.pdf
     """
 
     X = np.array([
@@ -47,10 +48,7 @@ def santiana():
     return X, Y
 
 def spinner():
-    """
-    A two bladed object
-    """
-
+    # A two bladed object
     X = np.array([0,1,2,3,4,5])
     Y = np.array([0,1,0.8,1,4,0])
     X = np.concatenate((X, np.flipud(X[:-1])))
@@ -58,40 +56,30 @@ def spinner():
     return X, Y
 
 def fork():
-    """
-    A fork with three prongs
-    """
-
+    # A fork with three prongs
     X = np.array([0, 1, 2, 3, 4, 5, 6, 4, 3.5, 3, 2.5, 2, 0])
     Y = np.array([0, 4, 1, 4, 1, 4, 0, -1, -3.8, -4, -3.8, -1, 0])
     return X, Y
 
 def wacky():
-    """
-    Randomly, strangely fox shaped object
-    """
-
+    # Randomly, strangely fox shaped object
     X = np.array([-3, -2.5, -2, -1, 0, 1, 2, 1.5, 1, 0, -2, -3])
     Y = np.array([0, 1, 4, 3, 4, 1, 0.5, -4, -2, -5, -0.3, 0])
     return X, Y
 
 def circle():
-    """
-    A unit circle
-    """
-
+    # A unit circle
     Theta = np.linspace(0, 2 * np.pi, 100)
     X = np.sin(Theta)
     Y = np.cos(Theta)
     return X, Y
 
 def rect():
-    """
-    Rectangular cavity, units in metres
-    """
+    # Rectangular cavity, units in metres
     return 0.2122, 0.1485
 
 def error_test_1():
+    # Causes an error
     return [0, 1, 3], "I'm a string!"
 
 def error_test_2():

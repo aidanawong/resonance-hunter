@@ -26,7 +26,7 @@ WaveEquationResonsanceHunter(
     x, y, 
     v(temperature), 
     N=30, 
-    spline_degree=3
+    spline_degree=3 
     ).play(
             bc="dirichlet",
             eigmode=1,

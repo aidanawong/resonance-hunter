@@ -16,7 +16,7 @@ from scipy.interpolate import splprep, splev
 
 class WaveEquationResonsanceHunter():
     
-    def __init__(self, input_X, input_Y, phase_velocity=343, N=30, spline_degree=3, fontsize=16):
+    def __init__(self, input_X, input_Y, phase_velocity=343, N=30, spline_degree=3, fontsize=14):
         """
         Initializing constants and settings.
         
@@ -253,7 +253,7 @@ class WaveEquationResonsanceHunter():
         ax.set_ylabel("Y", fontsize=self.fontsize)
 
         cbar = fig.colorbar(surface, shrink=0.5, aspect=10)
-        plt.show()
+        plt.savefig("figures/circle_eigmode-1.png", dpi=150)
         plt.close()
     
     def draw_cmap(self, sln):
@@ -276,7 +276,7 @@ class WaveEquationResonsanceHunter():
         ax.set_ylabel("Y", fontsize=self.fontsize)
         
         cbar = fig.colorbar(im, aspect=10)
-        plt.show()
+        plt.savefig("figures/circle_grid.png", dpi=150)
         plt.close()
 
     def play(self, bc="dirichlet", eigmode=0, draw_format="3D"):
@@ -305,7 +305,7 @@ class WaveEquationResonsanceHunter():
         
         # Find the frequency and eigenvalues given an eigmode
         freq = v * np.sqrt(np.abs(eigval[eigmode])) / (2 * np.pi)
-        border = 100 * "#"
+        border = 30 * "#"
         print(border)
         print("The eigenvalue is:\nλ" + str(eigmode) + " =", round(eigval[eigmode],2))
         print(border)
