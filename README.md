@@ -12,7 +12,7 @@ Based on the work by ComputationalScientist [here](https://youtu.be/Le4_LZmkZgs)
 
 #### Rectangle
 
-For a rectangular domain, the input is simple. Insert `x = width` and `y = length` and the domain will be a rectangle with the prescribed width and length. Below is an example at `eigmode = 3`.
+For a rectangular domain, the input is simple. In `main.py` insert `x = width` and `y = length` and the domain will be a rectangle with the prescribed width and length. Below is an example at `eigmode = 3`.
 
 <img src="figures/rect_eigmode-3.png" width="600">
 
