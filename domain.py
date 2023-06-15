@@ -1,7 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
-Coordinates for simple closed contours.
+Created on April 28, 2023 at 5:24 PM
+
+Author: Aidan Wong
+
+Description: A list of sample coordinates for simple closed contours.
 Two numbers are interpreted as length and width for a rectangular domain.
 """
+
 import numpy as np
 
 def santiana():
