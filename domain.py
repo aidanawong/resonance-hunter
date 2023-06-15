@@ -62,7 +62,7 @@ def fork():
     return X, Y
 
 def wacky():
-    # Randomly, strangely fox shaped object
+    # Random, strangely fox shaped object
     X = np.array([-3, -2.5, -2, -1, 0, 1, 2, 1.5, 1, 0, -2, -3])
     Y = np.array([0, 1, 4, 3, 4, 1, 0.5, -4, -2, -5, -0.3, 0])
     return X, Y

@@ -2,7 +2,7 @@
 
 Solves the 2D standing wave equation on any simple closed contour. Used to find the shape of acoustic waves at resonant frequencies inside custom designed cavities. 
 
-Based on the work by ComputationalScientist [here](https://youtu.be/Le4_LZmkZgs).
+Based on the work by ComputationalScientist [here](https://youtu.be/Le4_LZmkZgs). This wouldn't be possible without them.
 
 <img src="figures/wave_map_num_santiana_7.png" width="600">
 
@@ -22,7 +22,7 @@ A 2D domain is created according to the coordinates of a simple closed contour. 
 
 ```
 def wacky():
-    # Randomly, strangely fox shaped object
+    # Random, strangely fox shaped object
     X = np.array([-3, -2.5, -2, -1, 0, 1, 2, 1.5, 1, 0, -2, -3])
     Y = np.array([0, 1, 4, 3, 4, 1, 0.5, -4, -2, -5, -0.3, 0])
     return X, Y
@@ -48,7 +48,7 @@ Feel free to add your own coordinates! Do not forget to format them in a functio
 
 After choosing your contour in `main.py`, you can choose your preferences, including the wave speed, resolution, and degree of splines in the interpolation. The wave speed can be arbitrary, and `main.py` includes the speed of sound in dry air.
 
-You can select a boundary condition, either `"dirichlet"` or `"neumann"`, a particular eigenmode, and the output format. Each eigenmode returns a different solution, and their lower limit is 0. Their upper limit depends on the resolution. Usually, the higher the eigenmode, the greater the number of nodes and antinodes. For a 3D projection, you can input `"3D"`. Anything else will output a heatmap. So in the code below, we are looking for the second eigenmode, or `eigmode = 1` of a standing wave with Dirichlet boundary conditions. The space between points will be smoothed with cubic spline, and our resolution will be 30x30. The final graph will be in 3D.
+You can select a boundary condition, either `"dirichlet"` or `"neumann"`, a particular eigenmode, and the output format. Each eigenmode returns a different solution. Its lower limit is 0, and its upper limit depends on the resolution. Usually, the higher the eigenmode, the greater the number of nodes and antinodes. For a 3D projection, you can input `"3D"`. Anything else will output a heatmap. So in the code below, we are looking for the second eigenmode, or `eigmode = 1` of a standing wave with Dirichlet boundary conditions. The space between points will be smoothed with cubic spline, and our resolution will be 30x30. The final graph will be in 3D.
 
 ```
 WaveEquationResonsanceHunter(
@@ -63,7 +63,7 @@ spline_degree=3
         )
 ```
 
- In this example we will continue with the unit circle. The code will first return a heatmap showing the grid on which the equation will run on.
+ In this example we will continue with the unit circle. The code will first return a heatmap showing the grid on which the equation will run on. The higher the resolution, the more accurate the domain.
 
 <img src="figures/circle_grid.png" width="600">
 
@@ -71,7 +71,7 @@ Then a graph will be shown with the chosen resonance.  The eigenvalue and wave f
 
 <img src="figures/circle_eigmode-1.png" width="600">
 
-If instead we wrote `draw_format="heatmap"`, this will come out.
+If instead we wrote instead, say, `draw_format="heatmap"`, this will come out.
 
 <img src="figures/circle_eigmode-1_cmap.png" width="600">
 

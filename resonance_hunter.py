@@ -54,6 +54,47 @@ class WaveEquationResonsanceHunter():
         else:
             error_msg()
     
+    def play(self, bc="dirichlet", eigmode=0, draw_format="3D"):
+        """
+        Runs the entire class to solve and present the wave.
+
+        bc: str - Boundary conditions, dirichlet or neumann
+        eigmode: int - Eigenmode. The higher the eigenmode the greater the frequency.
+        draw_format: str - "3D" or "heatmap", describes the figure format
+        """
+
+        grid_length, v = self.grid_length, self.v
+
+        if self.shape_type == "contour":
+            grid = self.make_contour_grid()
+        else:
+            grid = self.make_rect_grid()
+
+        # Draw the domain
+        self.draw_cmap(grid)
+
+        if bc == "neumann":
+            [eigval, eigvect] = self.solve_wave_eqn_neumann(grid, grid_length)
+        else:
+            [eigval, eigvect] = self.solve_wave_eqn_dirichlet(grid, grid_length)
+        
+        # Find the frequency and eigenvalues given an eigmode
+        freq = v * np.sqrt(np.abs(eigval[eigmode])) / (2 * np.pi)
+        border = 30 * "#"
+        print(border)
+        print("The eigenvalue is:\nλ" + str(eigmode) + " =", round(eigval[eigmode],2))
+        print(border)
+        print("The frequency is:\nf" + str(eigmode) + " =", round(freq, 2))
+
+        wave = eigvect[:, eigmode].reshape(grid.shape)
+
+        if draw_format == "3D":
+            self.draw_3D(wave)
+        else:
+            self.draw_cmap(wave)
+        
+        return freq, wave
+    
     def process_boundary(self):
         """
         Prepares the boundary to be transformed into a grid by interpolation, 
@@ -152,20 +193,19 @@ class WaveEquationResonsanceHunter():
 
         return [eigval, eigvect, M]
 
-    def solve_wave_eqn_dirichlet(self, domain, Lx, Ly):
+    def solve_wave_eqn_dirichlet(self, domain, L):
         """
         Solves the wave equation with the finite difference method given Dirichlet conditions
 
         domain: 2D np.ndarray - The grid composed of 1's and 0's. The equation is solved wherever there are 1's.
-        Lx: float or int - Physical length of the grid's X axis. Equivalent to self.grid_length
-        Ly: float or int - Physical length of the grid's Y axis. Equivalent to self.grid_length
+        L: float or int - Physical length of the grid's X axis. Equivalent to self.grid_length
         """
 
         Nx, Ny = domain.shape
         M = np.zeros([Nx * Ny, Nx * Ny])
 
-        dX = Lx / (Nx - 1)
-        dY = Ly / (Ny - 1)
+        dX = L / (Nx - 1)
+        dY = L / (Ny - 1)
 
         for i in range(Nx):
             for j in range(Ny):
@@ -185,20 +225,19 @@ class WaveEquationResonsanceHunter():
         
         return [eigval, eigvect]
     
-    def solve_wave_eqn_neumann(self, domain, Lx, Ly):
+    def solve_wave_eqn_neumann(self, domain, L):
         """
         Solves the wave equation with the finite difference method given Neumann conditions
 
         domain: 2D np.ndarray - The grid composed of 1's and 0's. The equation is solved wherever there are 1's.
-        Lx: float or int - Physical length of the grid's X axis. Equivalent to self.grid_length
-        Ly: float or int - Physical length of the grid's Y axis. Equivalent to self.grid_length
+        L: float or int - Physical length of the grid's X axis. Equivalent to self.grid_length
         """
 
         Nx, Ny = domain.shape
         M = np.zeros([Nx * Ny, Nx * Ny])
 
-        dX = Lx / (Nx - 1)
-        dY = Ly / (Ny - 1)
+        dX = L / (Nx - 1)
+        dY = L / (Ny - 1)
 
         for i in range(Nx):
             for j in range(Ny):
@@ -278,44 +317,3 @@ class WaveEquationResonsanceHunter():
         cbar = fig.colorbar(im, aspect=10)
         plt.show()
         plt.close()
-
-    def play(self, bc="dirichlet", eigmode=0, draw_format="3D"):
-        """
-        Runs the entire class to solve and present the wave.
-
-        bc: str - Boundary conditions, dirichlet or neumann
-        eigmode: int - Eigenmode. The higher the eigenmode the greater the frequency.
-        draw_format: str - "3D" or "heatmap", describes the figure format
-        """
-
-        grid_length, v = self.grid_length, self.v
-
-        if self.shape_type == "contour":
-            grid = self.make_contour_grid()
-        else:
-            grid = self.make_rect_grid()
-
-        # Draw the domain
-        self.draw_cmap(grid)
-
-        if bc == "neumann":
-            [eigval, eigvect] = self.solve_wave_eqn_neumann(grid, grid_length, grid_length)
-        else:
-            [eigval, eigvect] = self.solve_wave_eqn_dirichlet(grid, grid_length, grid_length)
-        
-        # Find the frequency and eigenvalues given an eigmode
-        freq = v * np.sqrt(np.abs(eigval[eigmode])) / (2 * np.pi)
-        border = 30 * "#"
-        print(border)
-        print("The eigenvalue is:\nλ" + str(eigmode) + " =", round(eigval[eigmode],2))
-        print(border)
-        print("The frequency is:\nf" + str(eigmode) + " =", round(freq, 2))
-
-        wave = eigvect[:, eigmode].reshape(grid.shape)
-
-        if draw_format == "3D":
-            self.draw_3D(wave)
-        else:
-            self.draw_cmap(wave)
-        
-        return freq, wave
