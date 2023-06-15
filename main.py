@@ -30,5 +30,5 @@ WaveEquationResonsanceHunter(
     ).play(
             bc="dirichlet",
             eigmode=1,
-            draw_format="3D"
+            draw_format="heatmap"
             )
