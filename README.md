@@ -65,4 +65,4 @@ Then a graph will be shown with the chosen resonance.  The eigenvalue and wave f
 
 <img src="figures/circle_eigmode-1_cmap.png" width="600">
 
-**Happy Hunting!**
+## **Happy Hunting!**

@@ -253,7 +253,7 @@ class WaveEquationResonsanceHunter():
         ax.set_ylabel("Y", fontsize=self.fontsize)
 
         cbar = fig.colorbar(surface, shrink=0.5, aspect=10)
-        plt.savefig("figures/rect_eigmode-3.png", dpi=150)
+        plt.show()
         plt.close()
     
     def draw_cmap(self, sln):
