@@ -276,7 +276,7 @@ class WaveEquationResonsanceHunter():
         ax.set_ylabel("Y", fontsize=self.fontsize)
         
         cbar = fig.colorbar(im, aspect=10)
-        plt.savefig("figures/circle_eigmode-1_cmap.png", dpi=150)
+        plt.savefig("figures/spinner_eigmode_cmap.png", dpi=150)
         plt.close()
 
     def play(self, bc="dirichlet", eigmode=0, draw_format="3D"):

@@ -16,7 +16,7 @@ import domain
 from resonance_hunter import WaveEquationResonsanceHunter
 
 # Domain Coordinates
-x, y = domain.circle()
+x, y = domain.rect()
 
 # Speed of sound in dry air
 v = lambda T: np.sqrt(1.4 * constants.Boltzmann * (T + constants.zero_Celsius) / (28.96 * constants.u))
@@ -30,5 +30,5 @@ WaveEquationResonsanceHunter(
     ).play(
             bc="dirichlet",
             eigmode=1,
-            draw_format="heatmap"
+            draw_format="3D"
             )
