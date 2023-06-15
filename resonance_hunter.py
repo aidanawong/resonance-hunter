@@ -253,7 +253,7 @@ class WaveEquationResonsanceHunter():
         ax.set_ylabel("Y", fontsize=self.fontsize)
 
         cbar = fig.colorbar(surface, shrink=0.5, aspect=10)
-        plt.savefig("figures/circle_eigmode-1.png", dpi=150)
+        plt.savefig("figures/rect_eigmode-3.png", dpi=150)
         plt.close()
     
     def draw_cmap(self, sln):
@@ -276,7 +276,7 @@ class WaveEquationResonsanceHunter():
         ax.set_ylabel("Y", fontsize=self.fontsize)
         
         cbar = fig.colorbar(im, aspect=10)
-        plt.savefig("figures/spinner_eigmode_cmap.png", dpi=150)
+        plt.show()
         plt.close()
 
     def play(self, bc="dirichlet", eigmode=0, draw_format="3D"):

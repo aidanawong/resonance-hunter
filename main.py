@@ -28,7 +28,7 @@ WaveEquationResonsanceHunter(
     N=30, 
     spline_degree=3 
     ).play(
-            bc="dirichlet",
-            eigmode=1,
+            bc="neumann",
+            eigmode=3,
             draw_format="3D"
             )
