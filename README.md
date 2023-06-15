@@ -7,4 +7,4 @@ Based on the work by ComputationalScientist: https://youtu.be/Le4_LZmkZgs
 
 <img src="figures/circle_eigmode-1.png" width="600">
 
-![circle](figures/circle_eigmode-1.png){width=600px}
+![circle](figures/circle_eigmode-1.png){width=100}
