@@ -6,6 +6,12 @@ Based on the work by ComputationalScientist [here](https://youtu.be/Le4_LZmkZgs)
 
 <img src="figures/wave_map_num_santiana_7.png" width="600">
 
+## Dependencies
+
+1. numpy
+2. matplotlib
+3. scipy
+
 ## How to Use
 
 ### Creating a 2D Domain
